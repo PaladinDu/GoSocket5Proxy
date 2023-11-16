@@ -7,6 +7,7 @@ import (
 )
 
 var (
+	PackageNoAuth         = []byte{0x05, 0x00}
 	PackageWithAuth       = []byte{0x05, 0x02}
 	PackageAuthSuccess    = []byte{0x05, 0x00}
 	PackageAuthFailed     = []byte{0x05, 0x01}
@@ -39,18 +40,20 @@ func Socket5Proxy(connect net.Conn, userID string, password string) {
 		if err != nil {
 			return
 		}
-
-		userLength := int(b[1])
-		user := string(b[2:(2 + userLength)])
-		pass := string(b[(2 + userLength):])
-
-		if userID == user && password == pass {
-			_, _ = connect.Write(PackageAuthSuccess)
+		if userID == "" && password == "" {
+			_, _ = connect.Write(PackageNoAuth)
 		} else {
-			_, _ = connect.Write(PackageAuthFailed)
-			return
-		}
+			userLength := int(b[1])
+			user := string(b[2:(2 + userLength)])
+			pass := string(b[(2 + userLength):])
 
+			if userID == user && password == pass {
+				_, _ = connect.Write(PackageAuthSuccess)
+			} else {
+				_, _ = connect.Write(PackageAuthFailed)
+				return
+			}
+		}
 		n, err = connect.Read(b)
 		var host string
 		switch b[3] {

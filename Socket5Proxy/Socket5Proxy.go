@@ -17,6 +17,7 @@ var (
 func Socket5Proxy(connect net.Conn, userID string, password string) {
 	defer func() {
 		if err := recover(); err != nil {
+			println(err)
 		}
 	}()
 
@@ -34,15 +35,15 @@ func Socket5Proxy(connect net.Conn, userID string, password string) {
 	}
 
 	if b[0] == 0x05 {
-		_, _ = connect.Write(PackageWithAuth)
 
-		n, err = connect.Read(b)
-		if err != nil {
-			return
-		}
 		if userID == "" && password == "" {
 			_, _ = connect.Write(PackageNoAuth)
 		} else {
+			_, _ = connect.Write(PackageWithAuth)
+			n, err = connect.Read(b)
+			if err != nil {
+				return
+			}
 			userLength := int(b[1])
 			user := string(b[2:(2 + userLength)])
 			pass := string(b[(2 + userLength):])

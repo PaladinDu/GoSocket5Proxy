@@ -8,11 +8,13 @@ import (
 )
 
 func main() {
-	if len(os.Args) != 2 || os.Args[1] == "help" {
-		println("Socket5Proxy {listenAddr}")
+	if len(os.Args) != 4 || os.Args[1] == "help" {
+		println("Socket5Proxy {listenAddr} {userID} {password}")
 		return
 	}
 	listenAddr := os.Args[1]
+	userID := os.Args[2]
+	password := os.Args[3]
 	socket, err := net.Listen("tcp", listenAddr)
 	if err != nil {
 		return
@@ -41,6 +43,6 @@ func main() {
 			}
 			break
 		}
-		go Socket5Proxy.Socket5Proxy(client)
+		go Socket5Proxy.Socket5Proxy(client, userID, password)
 	}
 }

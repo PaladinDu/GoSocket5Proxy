@@ -13,12 +13,7 @@ var (
 	PackageConnectSuccess = []byte{0x05, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}
 )
 
-const (
-	User     = "PaladinDu"
-	PassWord = "286e71940aae4331bc6e4991e31fa8fc"
-)
-
-func Socket5Proxy(connect net.Conn) {
+func Socket5Proxy(connect net.Conn, userID string, password string) {
 	defer func() {
 		if err := recover(); err != nil {
 		}
@@ -49,7 +44,7 @@ func Socket5Proxy(connect net.Conn) {
 		user := string(b[2:(2 + userLength)])
 		pass := string(b[(2 + userLength):])
 
-		if User == user && PassWord == pass {
+		if userID == user && password == pass {
 			_, _ = connect.Write(PackageAuthSuccess)
 		} else {
 			_, _ = connect.Write(PackageAuthFailed)
